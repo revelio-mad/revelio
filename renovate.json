@@ -1,0 +1,45 @@
+{
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "extends": [
+        "config:base",
+        ":rebaseStalePrs",
+        ":enablePreCommit",
+        ":semanticCommits",
+        ":semanticCommitTypeAll(build)"
+    ],
+    "automerge": true,
+    "dependencyDashboard": true,
+    "labels": [
+        "dependencies"
+    ],
+    "minimumReleaseAge": "3 days",
+    "internalChecksFilter": "strict",
+    "packageRules": [
+        {
+            "description": "Wait three days for npm updates (npm retraction time)",
+            "matchDatasources": [
+                "npm"
+            ],
+            "internalChecksFilter": "strict",
+            "minimumReleaseAge": "3 days"
+        },
+        {
+            "description": "Updates to GitHub Actions should be tagged as 'ci'",
+            "matchPaths": [
+                ".github/workflows/*.yml",
+                ".github/workflows/*.yaml"
+            ],
+            "semanticCommitType": "ci"
+        }
+    ],
+    "vulnerabilityAlerts": {
+        "semanticCommitType": "fix",
+        "minimumReleaseAge": "1 day",
+        "internalChecksFilter": "strict",
+        "addLabels": [
+            "security"
+        ]
+    },
+    "prConcurrentLimit": 10,
+    "prHourlyLimit": 0
+}
