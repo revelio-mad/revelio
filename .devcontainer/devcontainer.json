@@ -1,0 +1,49 @@
+{
+	"name": "Python",
+	"build": {
+		"dockerfile": "Dockerfile",
+		"context": ".."
+	},
+	"updateContentCommand": ".devcontainer/updateContentCommand.sh",
+	"postStartCommand": ".devcontainer/postStartCommand.sh",
+	"remoteUser": "vscode",
+	"hostRequirements": {
+		"gpu": "optional"
+	},
+	"features": {
+		"ghcr.io/devcontainers/features/node:1": {},
+		"ghcr.io/devcontainers/features/nvidia-cuda:1": {}
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"tamasfe.even-better-toml",
+				"github.vscode-github-actions",
+				"ms-azuretools.vscode-docker",
+				"ms-python.python",
+				"ms-python.vscode-pylance",
+				"ms-python.pylint",
+				"ms-python.isort",
+				"ms-python.flake8",
+				"ms-python.black-formatter",
+				"ms-vsliveshare.vsliveshare",
+				"GitHub.copilot"
+			],
+			"settings": {
+				"python.defaultInterpreterPath": "/usr/local/bin/python",
+				"black-formatter.path": [
+					"/home/vscode/.local/bin/black"
+				],
+				"pylint.path": [
+					"/home/vscode/.local/bin/pylint"
+				],
+				"flake8.path": [
+					"/home/vscode/.local/bin/flake8"
+				],
+				"isort.path": [
+					"/home/vscode/.local/bin/isort"
+				]
+			}
+		}
+	}
+}
