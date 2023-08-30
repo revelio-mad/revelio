@@ -111,7 +111,7 @@ dummy-variables-rgx = "_+$|(_[a-zA-Z0-9_]*[a-zA-Z0-9]+?$)|dummy|^ignored_|^unuse
 ignored-argument-names = "_.*|^ignored_|^unused_"
 
 [tool.pylint.'EXCEPTIONS']
-overgeneral-exceptions = ["BaseException", "Exception"]
+overgeneral-exceptions = ["builtins.BaseException", "builtins.Exception"]
 
 [tool.mypy]
 disallow_any_unimported = true
