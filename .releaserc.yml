@@ -1,0 +1,26 @@
+tagFormat: "${version}"
+branches:
+  - "master"
+
+plugins:
+  - - "@semantic-release/commit-analyzer"
+    - preset: conventionalcommits
+  - - "@semantic-release/release-notes-generator"
+    - preset: conventionalcommits
+  - "@semantic-release/changelog"
+  - - "@semantic-release/exec"
+    - prepareCmd: |
+        sed -i 's/^version\s*=\s*.*$/version = "${nextRelease.version}"/g' pyproject.toml
+        sed -i 's/^release\s*=\s*.*$/release = "${nextRelease.version}"/g' docs/conf.py
+    - publishCmd: |
+        python -m build
+        twine upload --repository testpypi dist/*
+  - - "@semantic-release/git"
+    - assets:
+        - CHANGELOG.md
+        - pyproject.toml
+        - docs/conf.py
+  - - "@semantic-release/github"
+    - assets:
+        - dist/*.whl
+        - dist/*.tar.gz
