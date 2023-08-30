@@ -54,7 +54,7 @@ jobs:
       - name: Install development dependencies
         run: pip install -r requirements-dev.txt
       - name: Run tests
-        run: tox -e py${{ matrix.python-version }}
+        run: tox -e $(echo "py${{ matrix.python-version }}" | tr -d .)
   release:
     name: Release
     needs: [test]
