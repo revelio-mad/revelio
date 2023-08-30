@@ -1,6 +1,6 @@
 tagFormat: "${version}"
 branches:
-  - "master"
+  - "main"
 
 plugins:
   - - "@semantic-release/commit-analyzer"
@@ -12,7 +12,7 @@ plugins:
     - prepareCmd: |
         sed -i 's/^version\s*=\s*.*$/version = "${nextRelease.version}"/g' pyproject.toml
         sed -i 's/^release\s*=\s*.*$/release = "${nextRelease.version}"/g' docs/conf.py
-    - publishCmd: |
+      publishCmd: |
         python -m build
         twine upload --repository testpypi dist/*
   - - "@semantic-release/git"
