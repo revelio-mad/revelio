@@ -16,7 +16,7 @@ jobs:
           - { name: isort, args: isort --check-only --diff . }
           - { name: black, args: black --check --diff . }
           - { name: flake8, args: flake8 . }
-          - { name: pylint, args: pylint . }
+          - { name: pylint, args: pylint src/revelio/** }
           - { name: mypy, args: mypy . }
     runs-on: ubuntu-22.04
     steps:
