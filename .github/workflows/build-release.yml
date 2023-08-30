@@ -73,6 +73,8 @@ jobs:
           token: ${{ steps.revelio-bot.outputs.token }}
           fetch-depth: 0
       - name: Release
-        run: npx semantic-release
+        run: |
+          npm install
+          npx semantic-release
         env:
           GITHUB_TOKEN: ${{ steps.revelio-bot.outputs.token }}
