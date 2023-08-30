@@ -1,5 +1,5 @@
 from __future__ import annotations
 
 
-def placeholder():
+def placeholder() -> None:
     assert True
