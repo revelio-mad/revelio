@@ -91,3 +91,11 @@ jobs:
           npx semantic-release
         env:
           GITHUB_TOKEN: ${{ steps.revelio-bot.outputs.token }}
+  outcome:
+    name: Build and release outcome
+    runs-on: ubuntu-22.04
+    needs: [lint, test, release]
+    if: always()
+    steps:
+      - name: Verify there are no failed or cancelled jobs
+        run: jq --exit-status 'all(.result == "success" or .result == "skipped")' <<< '${{ toJson(needs) }}'
