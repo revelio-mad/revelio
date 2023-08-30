@@ -1,0 +1,38 @@
+name: Build documentation site
+
+on:
+  workflow_run:
+    workflows: ["Build and release"]
+    types: [completed]
+    branches: [main]
+
+jobs:
+  publish-site:
+    name: Build and publish the website
+    runs-on: ubuntu-22.04
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    steps:
+      - name: Setup revelio-bot
+        id: revelio-bot
+        uses: tibdex/github-app-token@v1.8.0
+        with:
+            app_id: ${{ secrets.REVELIO_BOT_APP_ID }}
+            private_key: ${{ secrets.REVELIO_BOT_PRIVATE_KEY }}
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+            token: ${{ steps.revelio-bot.outputs.token }}
+            fetch-depth: 0
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.8'
+      - name: Install development dependencies
+        run: pip install -r requirements-dev.txt
+      - name: Build the documentation site
+        run: make -C docs html
+      - name: Deploy the documentation site
+        uses: JamesIves/github-pages-deploy-action@v4.4.3
+        with:
+          token: ${{ steps.revelio-bot.outputs.token }}
+          folder: docs/_build/html

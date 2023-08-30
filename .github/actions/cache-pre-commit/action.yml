@@ -1,0 +1,13 @@
+name: Cache pre-commit hooks
+
+inputs: {}
+outputs: {}
+runs:
+  using: composite
+  steps:
+    - uses: actions/cache@v3
+      with:
+        path: ~/.cache/pre-commit
+        key: ${{ runner.os }}-pre-commit-${{ hashFiles('**/.pre-commit-config.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-pre-commit-

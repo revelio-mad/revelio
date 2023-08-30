@@ -1,0 +1,78 @@
+name: Build and release
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  lint:
+    name: Run ${{ matrix.tool }}
+    strategy:
+      matrix:
+        tool:
+          - { name: pre-commit, args: pre-commit run --all-files --show-diff-on-failure }
+          - { name: isort, args: isort --check-only --diff . }
+          - { name: black, args: black --check --diff . }
+          - { name: flake8, args: flake8 . }
+          - { name: pylint, args: pylint . }
+          - { name: mypy, args: mypy . }
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.8'
+      - name: Install development dependencies
+        run: pip install -r requirements-dev.txt
+      - name: Cache pre-commit hooks
+        uses: ./.github/actions/cache-pre-commit
+      - name: Run ${{ matrix.tool }}
+        run: ${{ matrix.tool.args }}
+  test:
+    name: Test
+    needs: [lint]
+    strategy:
+      matrix:
+        os: [ubuntu-22.04]
+        python-version: ["3.8", "3.9", "3.10"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install development dependencies
+        run: pip install -r requirements-dev.txt
+      - name: Run tests
+        run: tox -e py${{ matrix.python-version }}
+  release:
+    name: Release
+    needs: [test]
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Setup revelio-bot
+        id: revelio-bot
+        uses: tibdex/github-app-token@v1.8.0
+        with:
+          app_id: ${{ secrets.REVELIO_BOT_APP_ID }}
+          private_key: ${{ secrets.REVELIO_BOT_PRIVATE_KEY }}
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          token: ${{ steps.revelio-bot.outputs.token }}
+          fetch-depth: 0
+      - name: Release
+        run: npx semantic-release
+        env:
+          GITHUB_TOKEN: ${{ steps.revelio-bot.outputs.token }}
