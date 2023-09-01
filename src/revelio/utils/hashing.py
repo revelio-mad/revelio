@@ -25,7 +25,6 @@ def hash_dict(dictionary: Mapping[str, Any]) -> bytes:
     Raises:
         TypeError: If the dictionary is not serializable.
     """
-
     sorted_dict = {key: dictionary[key] for key in sorted(dictionary.keys())}
     packed = msgpack.packb(sorted_dict, use_bin_type=True)
     return blake3.blake3(packed).digest()  # pylint: disable=not-callable

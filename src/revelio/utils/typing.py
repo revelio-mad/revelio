@@ -28,9 +28,7 @@ def resolve_type_arguments(query_type: type, target_type: type) -> tuple[type | 
     Raises:
         TypeError: If the target type is not an instance of the query type.
     """
-
     # Taken from https://stackoverflow.com/a/69862817
-
     target_origin = get_origin(target_type)
     if target_origin is None:
         if target_type is query_type:
