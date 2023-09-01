@@ -27,21 +27,25 @@
 				"ms-python.flake8",
 				"ms-python.black-formatter",
 				"ms-vsliveshare.vsliveshare",
-				"GitHub.copilot"
+				"GitHub.copilot",
+				"ryanluker.vscode-coverage-gutters"
 			],
 			"settings": {
-				"python.defaultInterpreterPath": "/usr/local/bin/python",
+				"python.defaultInterpreterPath": "/home/vscode/.pyenv/shims/python",
 				"black-formatter.path": [
-					"/home/vscode/.local/bin/black"
+					"/home/vscode/.pyenv/shims/black"
 				],
 				"pylint.path": [
-					"/home/vscode/.local/bin/pylint"
+					"/home/vscode/.pyenv/shims/pylint"
 				],
 				"flake8.path": [
-					"/home/vscode/.local/bin/flake8"
+					"/home/vscode/.pyenv/shims/flake8"
 				],
 				"isort.path": [
-					"/home/vscode/.local/bin/isort"
+					"/home/vscode/.pyenv/shims/isort"
+				],
+				"editor.rulers": [
+					120
 				]
 			}
 		}
