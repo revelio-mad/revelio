@@ -88,7 +88,7 @@ extension-pkg-whitelist = ["numpy", "torch", "cv2", "pydantic", "scipy"]
 jobs = 0
 
 [tool.pylint.'BASIC']
-no-docstring-rgx = "(main|test.*|.*test|.*Test)$"
+no-docstring-rgx = "^(?!__init__$)_"
 
 [tool.pylint.'MESSAGES CONTROL']
 enable = "c-extension-no-member"
