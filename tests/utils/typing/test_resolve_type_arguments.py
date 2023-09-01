@@ -28,7 +28,6 @@ def test_self_generic() -> None:
     """
     Test that resolve_type_arguments returns the type's generic parameters when queried against itself.
     """
-
     T = TypeVar("T")
     U = TypeVar("U")
 
@@ -43,7 +42,6 @@ def test_self_generic_with_different_typevars() -> None:
     Test that resolve_type_arguments returns the type's generic parameters when queried against itself,
     even if the type variables are different.
     """
-
     T = TypeVar("T")
     U = TypeVar("U")
 
@@ -61,7 +59,6 @@ def test_nested_generics() -> None:
     Test that resolve_type_arguments returns the type's generic parameters when queried against a complex type
     that contains nested generics.
     """
-
     T = TypeVar("T")
     U = TypeVar("U")
     Q = TypeVar("Q")
@@ -85,15 +82,10 @@ def test_nested_generics() -> None:
     assert resolve_type_arguments(GenericA, GenericB) == (int, NestedA[Q, Q, Q], Q, U)
 
 
-def test_fully_bound_generics() -> None:
-    pass
-
-
 def test_unrelated_types_raises_exception() -> None:
     """
     Test that resolve_type_arguments raises a ValueError when the target type is not an instance of the query type.
     """
-
     T = TypeVar("T")
     U = TypeVar("U")
     Q = TypeVar("Q")
