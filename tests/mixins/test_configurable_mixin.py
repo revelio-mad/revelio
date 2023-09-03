@@ -12,9 +12,9 @@ from revelio.config.base import BaseConfig
 from revelio.mixins.configurable_mixin import ConfigurableMixin
 
 
-def test_init() -> None:
+def test_init_baseconfig() -> None:
     """
-    Test initialization with a valid configuration object.
+    Test initialization with a valid configuration object that inherits from BaseConfig.
     """
 
     class MyConfig(BaseConfig):  # pylint: disable=missing-class-docstring
@@ -27,7 +27,38 @@ def test_init() -> None:
     config = MyConfig(param1=1, param2="test")
     obj = MyConfigurableClass(config=config)
     assert obj.config == config
+    assert obj.config.param1 == 1
+    assert obj.config.param2 == "test"
     assert obj.config_class is MyConfig
+
+
+def test_init_dict() -> None:
+    """
+    Test initialization with a valid configuration object that is a dict.
+    """
+
+    class MyConfigurableClass(ConfigurableMixin[dict]):  # pylint: disable=missing-class-docstring
+        pass
+
+    config = {"param1": 1, "param2": "test"}
+    obj = MyConfigurableClass(config=config)
+    assert obj.config == config
+    assert obj.config["param1"] == 1
+    assert obj.config["param2"] == "test"
+    assert obj.config_class is dict
+
+
+def test_init_none() -> None:
+    """
+    Test initialization with a valid configuration object that is None.
+    """
+
+    class MyConfigurableClass(ConfigurableMixin[None]):  # pylint: disable=missing-class-docstring
+        pass
+
+    obj = MyConfigurableClass()
+    assert obj.config is None
+    assert obj.config_class is type(None)
 
 
 def test_init_without_config() -> None:

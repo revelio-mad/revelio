@@ -15,14 +15,14 @@ from revelio.config.base import BaseConfig
 from revelio.utils.hashing import hash_dict
 from revelio.utils.typing import resolve_type_arguments
 
-ConfigT = TypeVar("ConfigT", bound=Union[BaseConfig, None])
+ConfigT = TypeVar("ConfigT", bound=Union[dict, BaseConfig, None])
 
 
 class ConfigurableMixin(Generic[ConfigT]):
     """
     Mixin for classes that can be configured using a single configuration object (e.g. a pipeline step).
 
-    If a class inherits this mixin, it must bind the ConfigT type argument to a subclass of BaseConfig, or None.
+    If a class inherits this mixin, it must bind the ConfigT type argument to a dict, a subclass of BaseConfig, or None.
     The chosen type will be the type of the configuration object that the class expects to receive at initialization.
     If None is chosen, that means that the inheriting class is not configurable.
 
@@ -44,10 +44,10 @@ class ConfigurableMixin(Generic[ConfigT]):
         type_args = resolve_type_arguments(ConfigurableMixin, cls)
         if len(type_args) != 1:
             raise TypeError(
-                f"{cls.__name__} must inherit from ConfigurableMixin using a subclass of BaseConfig, or None."
+                f"{cls.__name__} must inherit from ConfigurableMixin using a dict, a subclass of BaseConfig, or None."
             )
         tconfig_cls = type_args[0]
-        if not isinstance(tconfig_cls, TypeVar) and issubclass(tconfig_cls, (BaseConfig, type(None))):
+        if not isinstance(tconfig_cls, TypeVar) and issubclass(tconfig_cls, (dict, BaseConfig, type(None))):
             cls.__revelio_config_cls__ = tconfig_cls
 
     def __init__(self, *args: Any, config: ConfigT | None = None, **kwargs: Any) -> None:
@@ -68,13 +68,21 @@ class ConfigurableMixin(Generic[ConfigT]):
             raise TypeError("ConfigurableMixin cannot be instantiated directly, and must be inherited from.")
         if not hasattr(self, "__revelio_config_cls__"):
             raise TypeError(
-                f"{type(self).__name__} must inherit from ConfigurableMixin using a subclass of BaseConfig, or None."
+                f"{type(self).__name__} must inherit from ConfigurableMixin using "
+                "a dict, a subclass of BaseConfig, or None."
             )
         if not isinstance(config, self.__revelio_config_cls__):
             raise TypeError(f"config must be of type {self.__revelio_config_cls__}")
         self.__revelio_config__ = config
         # Precompute the hash of the config object
-        config_dict = config.model_dump(mode="json") if config is not None else {}
+        if isinstance(config, BaseConfig):
+            config_dict = config.model_dump(mode="json")
+        elif isinstance(config, dict):
+            config_dict = config
+        elif config is None:
+            config_dict = {}
+        else:
+            raise TypeError("config must be of type dict, BaseConfig, or None")
         self.__revelio_config_hash__ = hash_dict(config_dict)
 
     @property
