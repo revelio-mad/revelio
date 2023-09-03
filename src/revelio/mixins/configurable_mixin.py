@@ -39,8 +39,8 @@ class ConfigurableMixin(Generic[ConfigT]):
     __revelio_config_hash__: bytes
     __revelio_config_cls__: type[ConfigT]
 
-    def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
-        super().__init_subclass__(*args, **kwargs)
+    def __init_subclass__(cls, **kwargs: Any) -> None:
+        super().__init_subclass__(**kwargs)
         type_args = resolve_type_arguments(ConfigurableMixin, cls)
         if len(type_args) != 1:
             raise TypeError(

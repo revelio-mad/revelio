@@ -31,19 +31,60 @@ def test_instantiation() -> None:
 
 def test_find() -> None:
     """
-    Test that RegistrableMixin.find finds the correct class.
+    Test that RegistrableMixin.find finds the correct class under the correct namespace.
     """
 
-    class MyBaseClass(RegistrableMixin):  # pylint: disable=missing-class-docstring
+    class MyBaseClass(RegistrableMixin, namespace="global"):  # pylint: disable=missing-class-docstring
         pass
 
     class MyClass1(MyBaseClass):  # pylint: disable=missing-class-docstring
+        pass
+
+    class MyOtherBaseClass(RegistrableMixin, namespace="other"):  # pylint: disable=missing-class-docstring
+        pass
+
+    class MyOtherClass1(MyOtherBaseClass):  # pylint: disable=missing-class-docstring
         pass
 
     assert MyBaseClass.find("MyClass1") is MyClass1
     assert MyBaseClass.find("myclass1") is MyClass1
     assert MyBaseClass.find("my-class1") is MyClass1
     assert MyBaseClass.find("my_class1") is MyClass1
+    assert MyOtherBaseClass.find("MyOtherClass1") is MyOtherClass1
+    assert MyOtherBaseClass.find("myotherclass1") is MyOtherClass1
+    assert MyOtherBaseClass.find("my-other-class1") is MyOtherClass1
+    assert MyOtherBaseClass.find("my_other_class1") is MyOtherClass1
+    with pytest.raises(KeyError):
+        MyBaseClass.find("MyOtherClass1")
+    with pytest.raises(KeyError):
+        MyOtherBaseClass.find("MyClass1")
+
+
+def test_namespace_inheritance() -> None:
+    """
+    Test that RegistrableMixin inherits the namespace of its superclass according to the MRO.
+    """
+
+    class ClassA(RegistrableMixin, namespace="global"):  # pylint: disable=missing-class-docstring
+        pass
+
+    class ClassB(ClassA):  # pylint: disable=missing-class-docstring
+        pass
+
+    class ClassC(ClassA, namespace="other"):  # pylint: disable=missing-class-docstring
+        pass
+
+    class ClassD(ClassB, ClassC):  # pylint: disable=missing-class-docstring
+        pass
+
+    class ClassE(ClassC, ClassB):  # pylint: disable=missing-class-docstring
+        pass
+
+    assert ClassA.__revelio_namespace__ == "global"
+    assert ClassB.__revelio_namespace__ == "global"
+    assert ClassC.__revelio_namespace__ == "other"
+    assert ClassD.__revelio_namespace__ == "global"
+    assert ClassE.__revelio_namespace__ == "other"
 
 
 def test_find_not_subclass() -> None:
@@ -52,13 +93,13 @@ def test_find_not_subclass() -> None:
     of the class that called this method.
     """
 
-    class MyBaseClass(RegistrableMixin):  # pylint: disable=missing-class-docstring
+    class MyBaseClass(RegistrableMixin, namespace="global"):  # pylint: disable=missing-class-docstring
         pass
 
     class MyClass1(MyBaseClass):  # pylint: disable=missing-class-docstring,unused-variable
         pass
 
-    class MyOtherBaseClass(RegistrableMixin):  # pylint: disable=missing-class-docstring
+    class MyOtherBaseClass(RegistrableMixin, namespace="global"):  # pylint: disable=missing-class-docstring
         pass
 
     class MyOtherClass1(MyOtherBaseClass):  # pylint: disable=missing-class-docstring,unused-variable
@@ -76,7 +117,7 @@ def test_instantiate() -> None:
     Test that RegistrableMixin.instantiate instantiates the correct class.
     """
 
-    class MyBaseClass(RegistrableMixin):  # pylint: disable=missing-class-docstring
+    class MyBaseClass(RegistrableMixin, namespace="global"):  # pylint: disable=missing-class-docstring
         pass
 
     class MyClass1(MyBaseClass):  # pylint: disable=missing-class-docstring

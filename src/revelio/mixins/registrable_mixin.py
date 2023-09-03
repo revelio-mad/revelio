@@ -21,6 +21,8 @@ class RegistrableMixin:
     Finally, this mixin provides a way of finding and instantiating a class with a given case-insensitive name.
     """
 
+    __revelio_namespace__: str
+
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         """
         Initializes a registrable object.
@@ -35,8 +37,23 @@ class RegistrableMixin:
         if type(self) is RegistrableMixin:  # pylint: disable=unidiomatic-typecheck
             raise TypeError("ConfigurableMixin cannot be instantiated directly, and must be inherited from.")
 
-    def __init_subclass__(cls) -> None:
-        registry.register(cls.__name__, cls)
+    def __init_subclass__(cls, namespace: str | None = None, **kwargs: Any) -> None:
+        super().__init_subclass__(**kwargs)
+        if namespace is not None:
+            if not isinstance(namespace, str):
+                raise TypeError(f"Namespace must be a string, got {type(namespace).__name__}.")
+            found_namespace = namespace
+        else:
+            for base in cls.__mro__[1:]:
+                if hasattr(base, "__revelio_namespace__"):
+                    assert issubclass(base, RegistrableMixin)
+                    assert isinstance(base.__revelio_namespace__, str)
+                    found_namespace = base.__revelio_namespace__
+                    break
+            else:
+                raise TypeError(f"Missing namespace for {cls.__name__}.")
+        cls.__revelio_namespace__ = found_namespace
+        registry.register(found_namespace, cls.__name__, cls)
 
     @classmethod
     def find(cls: type[RegistrableT_co], name: str) -> type[RegistrableT_co]:
@@ -53,7 +70,7 @@ class RegistrableMixin:
             KeyError: If no class with the given name is registered.
             TypeError: If the class with the given name is not a subclass of the class that called this method.
         """
-        found = registry.get(name)
+        found = registry.get(cls.__revelio_namespace__, name)
         if not issubclass(found, cls):
             raise TypeError(f"Class with name '{name}' is not a subclass of {cls.__name__}.")
         return found
