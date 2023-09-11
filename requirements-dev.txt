@@ -22,5 +22,5 @@ pytest-mock==3.11.1
 pytest-runner==6.0.0
 sphinx==7.1.2
 sphinx-copybutton==0.5.2
-tox==4.11.1
+tox==4.11.2
 twine==4.0.2
