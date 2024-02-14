@@ -23,4 +23,4 @@ pytest-runner==6.0.1
 sphinx==7.1.2
 sphinx-copybutton==0.5.2
 tox==4.12.1
-twine==4.0.2
+twine==5.0.0
