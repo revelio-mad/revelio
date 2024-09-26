@@ -18,7 +18,7 @@ jobs:
           - { name: flake8, args: flake8 . }
           - { name: pylint, args: pylint src/revelio/** }
           - { name: mypy, args: mypy . }
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -72,7 +72,7 @@ jobs:
     name: Release
     needs: [test]
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Setup revelio-bot
         id: revelio-bot
@@ -93,7 +93,7 @@ jobs:
           GITHUB_TOKEN: ${{ steps.revelio-bot.outputs.token }}
   outcome:
     name: Build and release outcome
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs: [lint, test, release]
     if: always()
     steps:
