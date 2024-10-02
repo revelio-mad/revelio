@@ -32,7 +32,7 @@ jobs:
       - name: Build the documentation site
         run: make -C docs html
       - name: Deploy the documentation site
-        uses: JamesIves/github-pages-deploy-action@v4.6.7
+        uses: JamesIves/github-pages-deploy-action@v4.6.8
         with:
           token: ${{ steps.revelio-bot.outputs.token }}
           folder: docs/_build/html
